@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbonated - News Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* --- Main Background Transition --- */
+        #main-bg {
+            transition: background-image 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* --- Animation Keyframes --- */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- Animation Classes --- */
+        .animate-fade-in {
+            animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .animate-slide-up {
+            animation: slideUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        /* --- Glassmorphism Effect for Bottom Bar --- */
+        .glassmorphism {
+            background: rgba(23, 23, 23, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* --- Scrollbar styling for a cleaner look --- */
+        .news-selector,
+        .article-list {
+            scroll-behavior: smooth;
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        .news-selector::-webkit-scrollbar,
+        .article-list::-webkit-scrollbar {
+            display: none;
+            /* for Chrome, Safari, and Opera */
+        }
+
+        /* --- Active state for selector items --- */
+        .news-item.active {
+            border-color: #ffffff;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body class="bg-black text-white">
+
+    <!-- Main container with dynamic background -->
+    <div id="main-bg" class="relative w-full h-screen bg-cover bg-center bg-no-repeat overflow-hidden">
+        <!-- Overlay for better text readability -->
+        <div class="absolute inset-0 bg-black/50"></div>
+
+        <div id="landing-page" class="relative z-10 h-full flex flex-col p-6 md:p-8 lg:p-12">
+            <!-- Header -->
+            <header class="flex justify-between items-center">
+                <h1 class="text-2xl md:text-3xl font-black tracking-tighter">Carbonated</h1>
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#"
+                        class="text-sm font-medium text-gray-300 hover:text-white transition-colors">Trending</a>
+                    <a href="#" class="text-sm font-medium text-gray-300 hover:text-white transition-colors">Best</a>
+                    <a href="#" class="text-sm font-medium text-gray-300 hover:text-white transition-colors">New</a>
+                    <a href="#" class="text-sm font-medium text-gray-300 hover:text-white transition-colors">Top</a>
+                </nav>
+                <button
+                    class="px-5 py-2 text-sm font-semibold bg-white text-black rounded-lg hover:bg-gray-200 transition-colors">Login</button>
+            </header>
+
+            <!-- Main Content -->
+            <main class="flex-grow flex items-center justify-start">
+                <div id="content-container" class="max-w-2xl text-left">
+                    <h2 id="news-category"
+                        class="text-6xl md:text-8xl font-black tracking-tighter uppercase animate-slide-up"></h2>
+                    <p id="news-description"
+                        class="mt-4 md:mt-6 text-lg md:text-xl text-gray-200 max-w-lg animate-slide-up"
+                        style="animation-delay: 0.1s;"></p>
+                    <a id="explore-link" href="#"
+                        class="inline-block mt-6 md:mt-8 text-base font-semibold border-b-2 border-transparent hover:border-white transition-all animate-slide-up"
+                        style="animation-delay: 0.2s;">
+                        Explore...
+                    </a>
+                </div>
+            </main>
+
+            <!-- Bottom News Selector -->
+            <footer class="w-full max-w-4xl mx-auto pb-4 relative group">
+                <button id="scroll-left"
+                    class="hidden absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm p-2 rounded-full transition-all opacity-0 group-hover:opacity-100 focus:opacity-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <div class="glassmorphism news-selector flex items-center space-x-4 p-3 rounded-2xl overflow-x-auto">
+                    <!-- News items will be dynamically inserted here -->
+                </div>
+                <button id="scroll-right"
+                    class="hidden absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm p-2 rounded-full transition-all opacity-0 group-hover:opacity-100 focus:opacity-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+            </footer>
+        </div>
+
+        <!-- Details Page -->
+        <div id="details-page" class="hidden relative z-10 h-full flex flex-col p-6 md:p-8 lg:p-12 animate-fade-in">
+            <header class="flex justify-between items-center mb-8">
+                <button id="back-button"
+                    class="flex items-center space-x-2 text-sm font-semibold bg-white/20 hover:bg-white/40 backdrop-blur-sm px-4 py-2 rounded-lg transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    <span>Back</span>
+                </button>
+                <h1 id="details-category-title" class="text-2xl md:text-3xl font-black tracking-tighter"></h1>
+            </header>
+            <main class="flex-grow overflow-y-auto article-list pr-2">
+                <div id="article-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Articles will be dynamically inserted here -->
+                </div>
+            </main>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const newsData = [
+                {
+                    category: 'Travel News',
+                    description: 'Step into a fairytale at Mont Saint-Michel – France\'s magical island abbey rising from the sea!',
+                    imageUrl: 'https://franceofalifetimetours.com/wp-content/uploads/2023/09/Mont-St-Michel-UNESCO-World-Heritage-Site-in-Normandy-France.jpg',
+                    thumbnailUrl: 'https://assets.weforum.org/article/image/nGNRBoGEeAaB36bs9qLZpSXjzzQ92MHeicpf5naJn0U.jpg',
+                    articles: [
+                        { title: 'The Ultimate Guide to Visiting Mont Saint-Michel', brief: 'Everything you need to know, from shuttle buses to secret pathways and the best time to visit to avoid crowds.' },
+                        { title: 'A Culinary Tour of Normandy', brief: 'Beyond the abbey, discover the rich flavors of the region, from creamy camembert to crisp apple cider.' },
+                        { title: 'Hidden Gems Along the French Coast', brief: 'Explore charming villages and dramatic cliffs near the famous island, perfect for a day trip.' },
+                        { title: 'The Ultimate Guide to Visiting Mont Saint-Michel', brief: 'Everything you need to know, from shuttle buses to secret pathways and the best time to visit to avoid crowds.' },
+                        { title: 'A Culinary Tour of Normandy', brief: 'Beyond the abbey, discover the rich flavors of the region, from creamy camembert to crisp apple cider.' },
+                        { title: 'Hidden Gems Along the French Coast', brief: 'Explore charming villages and dramatic cliffs near the famous island, perfect for a day trip.' },
+                        { title: 'Photography Tips for Capturing Mont Saint-Michel', brief: 'Learn how to get stunning shots of the island, from sunrise silhouettes to glowing night views.' },
+                        { title: 'The History and Legends of Mont Saint-Michel', brief: 'Uncover the fascinating stories behind the abbey, from medieval pilgrims to mythical tales.' },
+                        { title: 'Best Stays Near Mont Saint-Michel', brief: 'From cozy inns to boutique hotels, find the perfect place to rest after exploring the island.' }
+
+                    ]
+                },
+                {
+                    category: 'Video Games',
+                    description: 'Is the next installment of the legendary Grand Theft Auto series worth the hype, or is it destined to be overhyped?',
+                    imageUrl: 'https://gaming-cdn.com/images/products/2462/orig/grand-theft-auto-vi-pc-game-rockstar-cover.jpg?v=1746543065',
+                    thumbnailUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQlddov8gNEiCfI6Mmc2gP11Nr4MuVPZ3FoVA&s',
+                    articles: [
+                        { title: 'GTA VI Trailer Breakdown: 10 Things You Missed', brief: 'A deep dive into the latest trailer, uncovering hidden details and potential plot points.' },
+                        { title: 'The Evolution of Open World Games', brief: 'How Grand Theft Auto has consistently redefined the genre and what to expect from the future.' },
+                        { title: 'Fan Theories That Might Actually Be True', brief: 'From returning characters to map predictions, we explore the most plausible community theories.' },
+                        { title: 'GTA VI Trailer Secrets You Didn’t Notice', brief: 'We dissect the trailer shot by shot to uncover Rockstar\'s hidden messages.' },
+                        { title: '10 Hidden Details in the GTA VI Reveal', brief: 'A frame-by-frame breakdown revealing small hints with big implications.' },
+                        { title: 'Every Clue in the GTA VI Trailer Explained', brief: 'Spot the Easter eggs and subtle nods you may have overlooked.' },
+                        { title: 'GTA VI Deep Dive: What Rockstar Didn’t Tell You', brief: 'Analyzing every detail to predict what’s coming in GTA VI.' },
+
+                        { title: 'How GTA Shaped the Open-World Genre', brief: 'Tracing how Rockstar raised the bar for immersive worlds.' },
+                        { title: 'The Rise of Open Worlds: GTA’s Lasting Legacy', brief: 'A look at how open-world games have changed—and where they’re going next.' },
+                        { title: 'Redefining Gaming: Open Worlds Through the Years', brief: 'Exploring GTA’s role in transforming open-world experiences.' },
+                        { title: 'From Vice City to Today: The Open-World Revolution', brief: 'What past successes tell us about the future of sandbox gaming.' },
+
+                    ]
+                },
+                {
+                    category: 'Music Festivals',
+                    description: 'Relive the electrifying moments from Lollapalooza, where music, art, and culture collide.',
+                    imageUrl: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=2874&auto=format&fit=crop',
+                    thumbnailUrl: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=400&auto=format&fit=crop',
+                    articles: [
+                        { title: 'Top 5 Performances from Lollapalooza 2025', brief: 'From surprise guests to breathtaking visuals, these were the shows that stole the weekend.' },
+                        { title: 'Festival Fashion: The Boldest Trends Spotted', brief: 'A look at the most creative and eye-catching outfits from the festival grounds.' },
+                        { title: 'How to Survive a Music Festival: A Rookie\'s Guide', brief: 'Essential tips on everything from packing and hydration to navigating the crowds.' },
+                        { title: 'Top 5 Performances from Lollapalooza 2025', brief: 'From surprise guests to breathtaking visuals, these were the shows that stole the weekend.' },
+                        { title: 'Festival Fashion: The Boldest Trends Spotted', brief: 'A look at the most creative and eye-catching outfits from the festival grounds.' },
+                        { title: 'How to Survive a Music Festival: A Rookie\'s Guide', brief: 'Essential tips on everything from packing and hydration to navigating the crowds.' },
+                        { title: 'Behind the Scenes at Lollapalooza', brief: 'Go backstage to see how one of the world’s biggest festivals comes together.' },
+                        { title: 'Must-See Food Stalls at the Festival', brief: 'From gourmet bites to late-night snacks, here’s where to refuel between sets.' },
+                        { title: 'The Evolution of Lollapalooza', brief: 'How a small touring show became a global music festival powerhouse.' }
+
+                    ]
+                },
+                {
+                    category: 'World Politics',
+                    description: 'A deep dive into the latest global political shifts and what they mean for the future.',
+                    imageUrl: 'https://images.squarespace-cdn.com/content/v1/5ddfc1763d393a7e061bcb74/1610792471711-AR9C8ZKKU1U3TXCOA9B5/American+Carnival+pic.pn',
+                    thumbnailUrl: 'https://miro.medium.com/v2/0*OEQrubjWDo5p5z0T.jpeg',
+                    articles: [
+                        { title: 'Global Summit Concludes with New Climate Accord', brief: 'Leaders from 50 nations agree on ambitious new targets for carbon emission reductions by 2040.' },
+                        { title: 'Analyzing the Economic Impact of Recent Trade Pacts', brief: 'Experts weigh in on the winners and losers of the new international trade agreements.' },
+                        { title: 'The Rise of Digital Diplomacy', brief: 'How social media and online communication are changing the landscape of international relations.' },
+                        { title: 'Global Summit Concludes with New Climate Accord', brief: 'Leaders from 50 nations agree on ambitious new targets for carbon emission reductions by 2040.' },
+                        { title: 'Analyzing the Economic Impact of Recent Trade Pacts', brief: 'Experts weigh in on the winners and losers of the new international trade agreements.' },
+                        { title: 'The Rise of Digital Diplomacy', brief: 'How social media and online communication are changing the landscape of international relations.' },
+                        { title: 'Humanitarian Aid Efforts Intensify in Conflict Zones', brief: 'Global organizations coordinate relief for regions hit hardest by ongoing wars and crises.' },
+                        { title: 'Shifting Power Dynamics in Asia-Pacific', brief: 'Geopolitical analysts discuss emerging alliances and regional security challenges.' },
+                        { title: 'The Future of Global Governance', brief: 'Debating whether current institutions can meet the demands of a rapidly changing world.' }
+
+                    ]
+                },
+                {
+                    category: 'Tech & AI',
+                    description: 'Exploring the rapid advancements in artificial intelligence and how they are reshaping our world.',
+                    imageUrl: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?q=80&w=2920&auto=format&fit=crop',
+                    thumbnailUrl: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?q=80&w=400&auto=format&fit=crop',
+                    articles: [
+                        { title: 'AI in Medicine: The Next Frontier', brief: 'How artificial intelligence is helping doctors diagnose diseases earlier and more accurately.' },
+                        { title: 'Can AI Be Truly Creative? A Look at Generative Art', brief: 'Exploring the capabilities and limitations of AI in creating music, paintings, and literature.' },
+                        { title: 'The Ethical Dilemmas of Autonomous Machines', brief: 'As AI becomes more integrated into our lives, experts grapple with complex moral questions.' },
+                    ]
+                }
+            ];
+
+            // DOM Elements
+            const mainBg = document.getElementById('main-bg');
+            const landingPage = document.getElementById('landing-page');
+            const detailsPage = document.getElementById('details-page');
+            const contentContainer = document.getElementById('content-container');
+            const newsCategoryEl = document.getElementById('news-category');
+            const newsDescriptionEl = document.getElementById('news-description');
+            const exploreLinkEl = document.getElementById('explore-link');
+            const newsSelector = document.querySelector('.news-selector');
+            const scrollLeftBtn = document.getElementById('scroll-left');
+            const scrollRightBtn = document.getElementById('scroll-right');
+            const backButton = document.getElementById('back-button');
+            const articleContainer = document.getElementById('article-container');
+            const detailsCategoryTitle = document.getElementById('details-category-title');
+
+            let currentNewsIndex = 0;
+
+            function showLandingPage() {
+                detailsPage.classList.add('hidden');
+                landingPage.classList.remove('hidden');
+            }
+
+            function showDetailsPage() {
+                landingPage.classList.add('hidden');
+                detailsPage.classList.remove('hidden');
+
+                const data = newsData[currentNewsIndex];
+                detailsCategoryTitle.textContent = data.category;
+                articleContainer.innerHTML = ''; // Clear previous articles
+
+                data.articles.forEach(article => {
+                    const articleEl = document.createElement('div');
+                    articleEl.className = 'glassmorphism p-4 rounded-lg animate-slide-up';
+                    articleEl.innerHTML = `
+                        <h3 class="font-bold text-lg mb-2">${article.title}</h3>
+                        <p class="text-sm text-gray-300">${article.brief}</p>
+                    `;
+                    articleContainer.appendChild(articleEl);
+                });
+            }
+
+            exploreLinkEl.addEventListener('click', (e) => {
+                e.preventDefault();
+                showDetailsPage();
+            });
+
+            backButton.addEventListener('click', showLandingPage);
+
+
+            function updateContent(index, fromClick = false) {
+                if (index === currentNewsIndex && fromClick) {
+                    showDetailsPage();
+                    return;
+                }
+                if (index === currentNewsIndex) return;
+
+                currentNewsIndex = index;
+                const data = newsData[index];
+
+                contentContainer.classList.remove('animate-fade-in');
+                void contentContainer.offsetWidth;
+                contentContainer.classList.add('animate-fade-in');
+
+                mainBg.style.backgroundImage = `url('${data.imageUrl}')`;
+
+                setTimeout(() => {
+                    newsCategoryEl.textContent = data.category;
+                    newsDescriptionEl.textContent = data.description;
+                }, 100);
+
+                const allItems = newsSelector.querySelectorAll('.news-item');
+                allItems.forEach((item, itemIndex) => {
+                    item.classList.toggle('active', itemIndex === index);
+                });
+            }
+
+            function populateSelector() {
+                newsData.forEach((item, index) => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'news-item flex-shrink-0 w-36 h-20 md:w-48 md:h-24 rounded-lg overflow-hidden cursor-pointer border-2 border-transparent transition-all duration-300';
+                    itemDiv.style.backgroundImage = `url('${item.thumbnailUrl}')`;
+                    itemDiv.style.backgroundSize = 'cover';
+                    itemDiv.style.backgroundPosition = 'center';
+
+                    const overlay = document.createElement('div');
+                    overlay.className = 'w-full h-full bg-black/40 flex items-end p-2';
+                    const title = document.createElement('h3');
+                    title.className = 'text-xs md:text-sm font-bold leading-tight';
+                    title.textContent = item.category.split(' ')[0];
+                    overlay.appendChild(title);
+                    itemDiv.appendChild(overlay);
+
+                    itemDiv.addEventListener('click', () => updateContent(index, true));
+                    newsSelector.appendChild(itemDiv);
+                });
+                setupScroller();
+            }
+
+            function setupScroller() {
+                const scrollAmount = 250;
+                const checkScrollButtons = () => {
+                    if (newsSelector.scrollWidth <= newsSelector.clientWidth) {
+                        scrollLeftBtn.classList.add('hidden');
+                        scrollRightBtn.classList.add('hidden');
+                        return;
+                    }
+                    const { scrollLeft, scrollWidth, clientWidth } = newsSelector;
+                    scrollLeftBtn.classList.toggle('hidden', scrollLeft < 10);
+                    scrollRightBtn.classList.toggle('hidden', scrollLeft + clientWidth >= scrollWidth - 10);
+                };
+
+                scrollLeftBtn.addEventListener('click', () => newsSelector.scrollBy({ left: -scrollAmount }));
+                scrollRightBtn.addEventListener('click', () => newsSelector.scrollBy({ left: scrollAmount }));
+                newsSelector.addEventListener('scroll', () => requestAnimationFrame(checkScrollButtons));
+                window.addEventListener('resize', () => requestAnimationFrame(checkScrollButtons));
+                setTimeout(() => requestAnimationFrame(checkScrollButtons), 200);
+            }
+
+            populateSelector();
+            currentNewsIndex = -1;
+            updateContent(0);
+        });
+    </script>
+</body>
+
+</html>
